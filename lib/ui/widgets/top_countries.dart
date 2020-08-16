@@ -55,87 +55,92 @@ class TopCountries extends StatelessWidget {
   Widget build(BuildContext context) {
     return Neumorphic(
       margin: const EdgeInsets.all(FludaX.x3),
-      child: Wrap(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(width: 32),
-              NeumorphicText(
-                "Name",
-                textAlign: TextAlign.center,
-                textStyle: NeumorphicTextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
-                style: NeumorphicStyle(
-                  color: Colors.black,
-                ),
-              ).expand(),
-              NeumorphicText(
-                "Total",
-                textAlign: TextAlign.center,
-                textStyle: NeumorphicTextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
-                style: NeumorphicStyle(
-                  color: Colors.black,
-                ),
-              ).expand(),
-              NeumorphicText(
-                "New",
-                textAlign: TextAlign.center,
-                textStyle: NeumorphicTextStyle(
-                  fontWeight: FontWeight.w500,
-                ),
-                style: NeumorphicStyle(
-                  color: Colors.black,
-                ),
-              ).expand(),
-            ],
-          ).padHorizontal(2).marginTop(3),
-          ListView.builder(
-            padding: const EdgeInsets.only(
-              left: FludaX.x2,
-              right: FludaX.x2,
-              bottom: FludaX.x3,
-              top: FludaX.x2,
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Container(
+            constraints: constraints,
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(width: 32),
+                    NeumorphicText(
+                      "Name",
+                      textAlign: TextAlign.center,
+                      textStyle: NeumorphicTextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      style: NeumorphicStyle(
+                        color: Colors.black,
+                      ),
+                    ).expand(),
+                    NeumorphicText(
+                      "Total",
+                      textAlign: TextAlign.center,
+                      textStyle: NeumorphicTextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      style: NeumorphicStyle(
+                        color: Colors.black,
+                      ),
+                    ).expand(),
+                    NeumorphicText(
+                      "New",
+                      textAlign: TextAlign.center,
+                      textStyle: NeumorphicTextStyle(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      style: NeumorphicStyle(
+                        color: Colors.black,
+                      ),
+                    ).expand(),
+                  ],
+                ).padHorizontal(2).marginTop(3),
+                ListView.builder(
+                  padding: const EdgeInsets.only(
+                    left: FludaX.x2,
+                    right: FludaX.x2,
+                    bottom: FludaX.x3,
+                    top: FludaX.x2,
+                  ),
+                  itemCount: countries.length,
+                  itemBuilder: (context, index) {
+                    final country = countries[index];
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            Flag(
+                              country.countryCode,
+                              height: 24,
+                              width: 24,
+                            ).marginRight(),
+                            Text(
+                              country.country,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ).expand(),
+                            Text(
+                              getTotalNumber(country).formatted,
+                              textAlign: TextAlign.center,
+                            ).expand(),
+                            Text(
+                              getNewNumber(country).formatted,
+                              textAlign: TextAlign.center,
+                            ).expand(),
+                          ],
+                        ).padVertical(),
+                      ],
+                    );
+                  },
+                ).expand(),
+              ],
             ),
-            shrinkWrap: true,
-            physics: AlwaysScrollableScrollPhysics(),
-            itemCount: countries.length,
-            itemBuilder: (context, index) {
-              final country = countries[index];
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Flag(
-                        country.countryCode,
-                        height: 24,
-                        width: 24,
-                      ).marginRight(),
-                      Text(
-                        country.country,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ).expand(),
-                      Text(
-                        getTotalNumber(country).formatted,
-                        textAlign: TextAlign.center,
-                      ).expand(),
-                      Text(
-                        getNewNumber(country).formatted,
-                        textAlign: TextAlign.center,
-                      ).expand(),
-                    ],
-                  ).padVertical(),
-                ],
-              );
-            },
-          ),
-        ],
+          );
+        },
       ),
     );
   }
