@@ -10,26 +10,20 @@ import '../../constants/colors.dart';
 import '../../data/world_map.dart';
 import '../../utils/extensions.dart';
 
-class MapCountry extends StatefulWidget {
+class MapCountry extends StatelessWidget {
   final double doubleRandom;
   final String country;
+  final Color color;
 
-  const MapCountry({Key key, this.country, this.doubleRandom})
+  const MapCountry({Key key, this.country, this.doubleRandom, this.color})
       : super(key: key);
-
-  @override
-  _MapCountryState createState() => _MapCountryState();
-}
-
-class _MapCountryState extends State<MapCountry> {
-  bool isHover = false;
 
   @override
   Widget build(BuildContext context) {
     return SvgPicture.string(
       '''
       <svg height="400" width="1000">
-          <path d="${worldMap["shapes"][widget.country]}" stroke="${kBackgroundColor.toHex()}" stroke-width="1" fill="${(isHover ? kMostInfectedColor : kLessInfectedColor).toHex()}" />
+          <path d="${worldMap["shapes"][country]}" stroke="${kBackgroundColor.toHex()}" stroke-width="1" fill="${(color ?? kLessInfectedColor).toHex()}" />
       </svg>
           ''',
       key: UniqueKey(),

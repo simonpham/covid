@@ -3,8 +3,6 @@
  * Email: simon@simonit.dev
  */
 
-import 'dart:math';
-
 import 'package:covid/ui/widgets/top_countries.dart';
 import 'package:fluda/fluda.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +12,7 @@ import 'package:provider/provider.dart';
 
 import '../../constants/colors.dart';
 import '../../constants/numbers.dart';
-import '../../data/world_map.dart';
 import '../../providers/covid_stats.dart';
-import '../../ui/widgets/map_country.dart';
 import '../../ui/widgets/world_map_sliver_app_bar.dart';
 import '../../utils/extensions.dart';
 import '../widgets/case_summary.dart';
@@ -34,8 +30,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   bool _isSnapping = false;
 
-  final List<MapCountry> _countries = <MapCountry>[];
-
   int _selectedTopCountriesTab = 0;
 
   @override
@@ -43,8 +37,10 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     super.initState();
 
     Future.microtask(() async {
+      context.read<CovidStats>().loadMap();
       await context.read<CovidStats>().loadWorldSummary();
       await context.read<CovidStats>().loadTopCountries();
+      await context.read<CovidStats>().updateMap();
     });
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -53,16 +49,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       statusBarIconBrightness: Brightness.dark,
       systemNavigationBarIconBrightness: Brightness.dark,
     ));
-
-    for (var country in worldMap["shapes"].keys) {
-      final random = Random().nextDouble();
-      _countries.add(
-        MapCountry(
-          country: country,
-          doubleRandom: random,
-        ),
-      );
-    }
   }
 
   @override
@@ -77,9 +63,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             headerSliverBuilder: (_, __) => [
               SliverPersistentHeader(
                 pinned: true,
-                delegate: WorldMapSliverAppBar(
-                  countries: _countries,
-                ),
+                delegate: WorldMapSliverAppBar(),
               )
             ],
             body: Consumer<CovidStats>(

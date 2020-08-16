@@ -101,7 +101,7 @@ class TopCountries extends StatelessWidget {
               top: FludaX.x2,
             ),
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: AlwaysScrollableScrollPhysics(),
             itemCount: countries.length,
             itemBuilder: (context, index) {
               final country = countries[index];
