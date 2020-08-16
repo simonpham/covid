@@ -101,7 +101,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                             color: Colors.red,
                           ).expand(),
                         ],
-                      ).padHorizontal(3),
+                      ).padHorizontal(3).marginTop(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -152,27 +152,48 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                                   "Confirmed",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.orange,
                                   ),
                                 ).center(),
-                                background: Text("Infected").center(),
+                                background: Text(
+                                  "Confirmed",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.orange[300],
+                                  ),
+                                ).center(),
                               ),
                               ToggleElement(
                                 foreground: Text(
                                   "Recovered",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.green,
                                   ),
                                 ).center(),
-                                background: Text("Recovered").center(),
+                                background: Text(
+                                  "Recovered",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.green[300],
+                                  ),
+                                ).center(),
                               ),
                               ToggleElement(
                                 foreground: Text(
                                   "Death",
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
+                                    color: Colors.red,
                                   ),
                                 ).center(),
-                                background: Text("Death").center(),
+                                background: Text(
+                                  "Death",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.red[300],
+                                  ),
+                                ).center(),
                               ),
                             ],
                           ).expand(),
