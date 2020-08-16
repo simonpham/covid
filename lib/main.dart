@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'constants/numbers.dart';
 
@@ -26,6 +27,7 @@ class Covid extends StatelessWidget {
       darkTheme: NeumorphicThemeData.dark(),
       theme: NeumorphicThemeData(
         baseColor: Colors.white,
+        textTheme: GoogleFonts.ralewayTextTheme(),
       ),
       home: MyHomePage(),
     );
