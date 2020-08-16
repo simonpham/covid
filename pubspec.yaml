@@ -31,6 +31,7 @@ dependencies:
 
   fluda: ^0.2.1
   flutter_neumorphic: ^3.0.1
+  intl: ^0.16.1
 
   flutter_svg: ^0.18.0
   matrix4_transform: ^1.1.4
