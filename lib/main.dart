@@ -24,7 +24,7 @@ class Covid extends StatelessWidget {
     return NeumorphicApp(
       debugShowCheckedModeBanner: false,
       title: 'COVID-19',
-      darkTheme: NeumorphicThemeData.dark(),
+      themeMode: ThemeMode.light,
       theme: NeumorphicThemeData(
         baseColor: Colors.white,
         textTheme: GoogleFonts.ralewayTextTheme(),
