@@ -32,6 +32,8 @@ dependencies:
   fluda: ^0.2.1
   flutter_neumorphic: ^3.0.1
   intl: ^0.16.1
+  flag:
+    git: https://github.com/simonpham/flag_flutter.git
 
   flutter_svg: ^0.18.0
   matrix4_transform: ^1.1.4
