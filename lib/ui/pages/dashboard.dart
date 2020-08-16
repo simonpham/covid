@@ -5,16 +5,21 @@
 
 import 'dart:math';
 
+import 'package:covid/ui/widgets/top_countries.dart';
 import 'package:fluda/fluda.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
+import 'package:provider/provider.dart';
 
 import '../../constants/colors.dart';
 import '../../constants/numbers.dart';
 import '../../data/world_map.dart';
+import '../../providers/covid_stats.dart';
 import '../../ui/widgets/map_country.dart';
 import '../../ui/widgets/world_map_sliver_app_bar.dart';
+import '../../utils/extensions.dart';
+import '../widgets/case_summary.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key key}) : super(key: key);
@@ -25,16 +30,22 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   final ScrollController _scrollController = ScrollController();
+  final PageController _pageController = PageController();
+
   bool _isSnapping = false;
 
   final List<MapCountry> _countries = <MapCountry>[];
 
   int _selectedTopCountriesTab = 0;
-  var color;
 
   @override
   void initState() {
     super.initState();
+
+    Future.microtask(() async {
+      await context.read<CovidStats>().loadWorldSummary();
+      await context.read<CovidStats>().loadTopCountries();
+    });
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -71,88 +82,144 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                 ),
               )
             ],
-            body: Neumorphic(
-              style: NeumorphicStyle(
-                color: Colors.red.withOpacity(0.01),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            body: Consumer<CovidStats>(
+              builder: (_, CovidStats provider, __) {
+                if (provider.worldSummary == null) {
+                  return SummaryPlaceholder();
+                }
+                return Neumorphic(
+                  style: NeumorphicStyle(
+                    color: Colors.red.withOpacity(0.01),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Top Countries",
-                        style: context.theme.textTheme.headline6,
-                      ).expand(),
-                      NeumorphicButton(
-                        onPressed: () {},
-                        child: Text(
-                          "View all",
-                        ),
-                      ),
-                    ],
-                  ).padHorizontal().marginTop(3),
-                  Row(
-                    children: [
-                      NeumorphicToggle(
-                        onChanged: (index) {
+                      Row(
+                        children: [
+                          CaseSummary(
+                            title: "Total Cases",
+                            subtitle:
+                                "${provider.worldSummary.global.totalConfirmed.formatted}",
+                            color: Colors.orange,
+                          ).expand(),
+                          SizedBox(width: FludaX.x),
+                          CaseSummary(
+                            title: "Recovered",
+                            subtitle:
+                                "${provider.worldSummary.global.totalRecovered.formatted}",
+                            color: Colors.green,
+                          ).expand(),
+                          SizedBox(width: FludaX.x),
+                          CaseSummary(
+                            title: "Death",
+                            subtitle:
+                                "${provider.worldSummary.global.totalDeaths.formatted}",
+                            color: Colors.red,
+                          ).expand(),
+                        ],
+                      ).padHorizontal(3),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          NeumorphicText(
+                            "Top Countries",
+                            style: NeumorphicStyle(
+                              color: Colors.black,
+                            ),
+                            textStyle: NeumorphicTextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                            textAlign: TextAlign.start,
+                          ).expand(),
+                          NeumorphicButton(
+                            onPressed: () {
+                              _scrollController.goTo(
+                                  _scrollController.position.maxScrollExtent);
+                            },
+                            child: NeumorphicText(
+                              "View all",
+                              style: NeumorphicStyle(
+                                color: Colors.black,
+                              ),
+                              textStyle: NeumorphicTextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                        ],
+                      ).padHorizontal().marginTop(3),
+                      Row(
+                        children: [
+                          NeumorphicToggle(
+                            onChanged: (index) {
+                              setState(() {
+                                _selectedTopCountriesTab = index;
+                                _pageController.goTo(index);
+                              });
+                            },
+                            thumb: Neumorphic(),
+                            selectedIndex: _selectedTopCountriesTab,
+                            children: [
+                              ToggleElement(
+                                foreground: Text(
+                                  "Confirmed",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ).center(),
+                                background: Text("Infected").center(),
+                              ),
+                              ToggleElement(
+                                foreground: Text(
+                                  "Recovered",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ).center(),
+                                background: Text("Recovered").center(),
+                              ),
+                              ToggleElement(
+                                foreground: Text(
+                                  "Death",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ).center(),
+                                background: Text("Death").center(),
+                              ),
+                            ],
+                          ).expand(),
+                        ],
+                      ).padHorizontal().marginTop(),
+                      PageView(
+                        onPageChanged: (index) {
                           setState(() {
                             _selectedTopCountriesTab = index;
                           });
                         },
-                        thumb: Neumorphic(),
-                        selectedIndex: _selectedTopCountriesTab,
+                        controller: _pageController,
                         children: [
-                          ToggleElement(
-                            foreground: Text(
-                              "Infected",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ).center(),
-                            background: Text("Infected").center(),
+                          TopCountries(
+                            provider.topConfirmedCountries,
+                            topCase: TopCase.confirmed,
                           ),
-                          ToggleElement(
-                            foreground: Text(
-                              "Recovered",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ).center(),
-                            background: Text("Recovered").center(),
+                          TopCountries(
+                            provider.topRecoveredCountries,
+                            topCase: TopCase.recovered,
                           ),
-                          ToggleElement(
-                            foreground: Text(
-                              "Death",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ).center(),
-                            background: Text("Death").center(),
+                          TopCountries(
+                            provider.topDeathCountries,
+                            topCase: TopCase.death,
                           ),
                         ],
                       ).expand(),
                     ],
-                  ).padHorizontal().marginTop(),
-                  Neumorphic(
-                    margin: const EdgeInsets.all(FludaX.x3),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "China",
-                        ).center(),
-                        NeumorphicButton(
-                          onPressed: () {},
-                          child: Text(
-                            "Details",
-                          ),
-                        ).marginTop(),
-                      ],
-                    ).spaceAround(3),
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ),
         ),
@@ -187,5 +254,12 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
       _isSnapping = false;
     });
+  }
+}
+
+class SummaryPlaceholder extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
